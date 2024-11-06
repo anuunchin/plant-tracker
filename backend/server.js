@@ -1,4 +1,5 @@
 const express = require("express");                 //imports express
+const {v4: uuidv4 } = require("uuid");
 const app = express()                               //creates express app
 const PORT = 3000;                                  ///middleware func that processes requests before they reach route handlers
 
@@ -11,7 +12,13 @@ app.listen(PORT, () => {                            //() => { ... } is a callbac
 let plants = [];                
 
 app.post('/plants', (req, res) => {                 //handles POST requests to the /plants endpoint
-    const plant = req.body;
+    const { name, lastWatered} = req.body;
+
+    if (!lastWatered || isNaN(Date.parse(lastWatered))) {
+        return res.status(400).send({ error: 'Invalid or missing lastWatered date' });
+    }
+
+    const plant = { name, lastWatered, id: uuidv4()};
     plants.push(plant);                             //equals to append in Python
     res.status(201).send(plant);                    //sends success status with plant object
 });

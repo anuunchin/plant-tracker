@@ -1,62 +1,70 @@
-async function fetchPlants() {
-    const response = await fetch('http://localhost:3000/plants');
-    const plants = await response.json();
-    const plantList = document.getElementById('plant-list');
-    plantList.innerHTML = '';
-    plants.forEach((plant) => {
-        const plantItem = document.createElement('div');
-        plantItem.textContent = `${plant.name} - Last watered: ${plant.lastWatered}`;
-        plantList.appendChild(plantItem);
+document.addEventListener("DOMContentLoaded", () => {
+    const plantList = document.getElementById("plant-list");
+    const plantForm = document.getElementById("plant-form");
+
+    fetchPlants();
+
+    plantForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const plantName = document.getElementById("plant-name").value;
+        const lastWatered = document.getElementById("last-watered").value;
+
+        try {
+            const response = await fetch('http://localhost:3000/plants', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: plantName, lastWatered: lastWatered })
+            });
+            const newPlant = await response.json();
+            addPlantToDOM(newPlant);
+            plantForm.reset();
+        } catch (error) {
+            console.error('Error adding plant:', error);
+        }
     });
-}
 
-fetchPlants(); // Calls the function when the page loads
+    async function fetchPlants() {
+        try {
+            const response = await fetch('http://localhost:3000/plants');
+            const plants = await response.json();
+            plantList.innerHTML = '';
+            plants.forEach(addPlantToDOM); 
+        } catch (error) {
+            console.error('Error fetching plants:', error);
+        }
+    }
 
-document.getElementById('plant-form').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Prevents the page from refreshing on form submission
+    function addPlantToDOM(plant) {
+        const plantItem = document.createElement('div');
+        plantItem.classList.add('plant-card');
+        plantItem.setAttribute('data-id', plant.id); 
 
-    const plantName = document.getElementById('plant-name').value;
-    const lastWatered = document.getElementById('last-watered').value;
+        plantItem.innerHTML = `
+            <p><strong>${plant.name}</strong></p>
+            <p>Last watered on: ${plant.lastWatered}</p>
+            <button class="delete-plant">Delete</button>
+        `;
 
-    try {
-        const response = await fetch('http://localhost:3000/plants', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: plantName, lastWatered: lastWatered })
+        plantItem.querySelector('.delete-plant').addEventListener('click', async () => {
+            await deletePlant(plant.id);
+            plantItem.remove();
         });
-        const newPlant = await response.json();
-        
-        // Add new plant to the list
-        fetchPlants(); // Refresh the plant list
-    } catch (error) {
-        console.error('Error adding plant:', error);
+
+        plantList.appendChild(plantItem); 
+    }
+
+    async function deletePlant(plantID) {
+        try {
+            const response = await fetch(`http://localhost:3000/plants/${plantID}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                console.error('Failed to delete plant');
+            }
+        } catch (error) {
+            console.error('Error deleting plant:', error);
+        }
     }
 });
-
-async function updatePlant(id, updatedData) {
-    try {
-        const response = await fetch(`http://localhost:3000/plants/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedData)
-        });
-        const updatedPlant = await response.json();
-        console.log('Plant updated:', updatedPlant);
-        
-        fetchPlants(); // Refresh the plant list
-    } catch (error) {
-        console.error('Error updating plant:', error);
-    }
-}
-
-async function deletePlant(id) {
-    try {
-        await fetch(`http://localhost:3000/plants/${id}`, {
-            method: 'DELETE'
-        });
-        
-        fetchPlants(); // Refresh the plant list
-    } catch (error) {
-        console.error('Error deleting plant:', error);
-    }
-}

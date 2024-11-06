@@ -4,6 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Tracker</title>
+    <style>
+        .plant-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            width: 200px;
+            text-align: center;
+        }
+
+        .delete-plant {
+            background-color: orange;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete-plant:hover {
+            background-color: darkorange;
+        }
+    </style>
 </head>
 <body>
     <h1>Plant Tracker</h1>
@@ -11,16 +35,16 @@
     
     <form id="plant-form">
         <input type="text" id="plant-name" placeholder="Plant Name" required />
-        <input type="text" id="last-watered" placeholder="Last Watered Date" required />
+        <input type="date" id="last-watered" placeholder="Last Watered Date" required />
         <button type="submit">Add Plant</button>
     </form>
 
-    <form id="plant-remove-form">
-        <input type="text" id="plant-name" placeholder="Plant Name" required />
-        <button type="delete">Delete Plant</button>
-    </form>
+    <script>
+        const lastWateredInput = document.getElementById("last-watered");
+        const today = new Date().toISOString().split("T")[0];
+        lastWateredInput.setAttribute("max", today);
+    </script>
 
-
-    <script src="main.js"></script>
+    <script src="main.js"></script> <!-- Immediately loads and runs this file -->
 </body>
 </html>
