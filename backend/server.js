@@ -18,10 +18,44 @@ app.post('/plants', (req, res) => {                 //handles POST requests to t
         return res.status(400).send({ error: 'Invalid or missing lastWatered date' });
     }
 
-    const plant = { name, lastWatered, id: uuidv4()};
+    const plant = { name, lastWatered, id: uuidv4(), wateringHistory: [lastWatered]}; 
     plants.push(plant);                             //equals to append in Python
     res.status(201).send(plant);                    //sends success status with plant object
 });
+
+app.patch('/plants/:id/water', (req, res) => {
+    //TODO
+    const {id} = req.params;
+    const {lastWateredDate, force} = req.body;
+
+    let plant = plants.find((p) => p.id === id);
+    if (plant) {
+        if (!lastWateredDate || isNaN(Date.parse(lastWateredDate))) {
+            return res.status(400).send({error: 'Invalid or missing watered date.'})
+        }
+        
+        const lastRecordedDate = new Date(plant.lastWatered);
+        const newDate = new Date(lastWateredDate);
+
+        if (!force && newDate < lastRecordedDate) {
+            return res.status(409).send({
+                message: `The date entered is earlier than the last watered date (${plant.lastWatered}).`,
+                lastWatered: plant.lastWatered
+            });
+        }
+
+        // Only update lastWatered if the new date is more recent (there could be some backfilling happening)
+        if (newDate > lastRecordedDate) {
+            plant.lastWatered = lastWateredDate;
+        }
+        plant.wateringHistory.push(lastWateredDate);
+        // Order list so that history looks clean
+        plant.wateringHistory.sort((a,b) => new Date(b) - new Date(a));
+        res.send(plant);
+    } else {
+        return res.status(400).send({error: 'No such plant found.'})
+    }
+})
 
 app.get('/plants', (req, res) => {                  //handles GET requests
     res.send(plants);                               //just sends all plants 

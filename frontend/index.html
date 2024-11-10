@@ -4,40 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        #plant-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; 
+            justify-content: flex-start; 
+        }
+
         .plant-card {
-            border: 1px solid #ccc;
+            position: relative;
+            border: 3px dashed #b6cfb6;
             padding: 10px;
             margin: 10px 0;
             border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: #eceae4;
             width: 200px;
             text-align: center;
         }
 
-        .delete-plant {
-            background-color: orange;
-            color: white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            border-radius: 4px;
+
+        .plant-title {
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 20px;
+            color: #555555;
+            font-weight: bold;
+            margin: 0; 
+            padding-top: 15px;
+            padding-bottom: 0px;
         }
 
-        .delete-plant:hover {
-            background-color: darkorange;
+        .last-watered-text {
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 13px;
+            color: #777777;
+            font-weight: bold;
+            margin: 0; 
+            padding-top: 15px;
+            padding-bottom: 0px;
         }
+
+        .last-watered-date {
+            border: 1px solid #b6cfb6;
+            border-radius: 15px;
+            padding-top: 5px;
+            margin-top: 5px;
+            padding: 5px;
+            background-color:  #f9f9f9;
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 14px; 
+            color: #333; 
+        }
+
+        .watering-history-title {
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 13px;
+            color: #777777;
+            font-weight: bold;
+            margin: 0; 
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .watering-history {
+            border: 2px solid #b6cfb6;
+            max-height: 45px;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 5px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            background-color:  #f9f9f9;
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 14px; 
+            color: #333; 
+        }
+
+        .water-title {
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 13px;
+            color: #777777;
+            font-weight: bold;
+            margin: 0; 
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .update-watered-date {
+            border: 1px solid #b6cfb6;
+            border-radius: 8px;
+            padding: 5px;
+            margin-top: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f9f9f9;
+            outline: none; 
+        }
+
+        .update-watered-date:focus {
+            border-color: #8bb08b; 
+            box-shadow: 0 0 5px rgba(139, 176, 139, 0.5);
+        }
+
+        .update-plant {
+            background-color: #4CAF50; 
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 15px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease; 
+        }
+
+        .update-plant:hover {
+            background-color: #45a049; 
+        } 
+
+        .settings {
+            position: absolute;
+            top: 3px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        .settings-icon {
+            font-size: 30px;
+            color: #555;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px; 
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .dropdown-menu button {
+            background-color: #ffaea5; 
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .dropdown-menu button:hover {
+            background-color: #ff968a; 
+        }
+
+        .notification {
+            opacity: 0;
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #999999;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            transition: opacity 0.5s ease;
+            z-index: 2;
+        }
+
+        #global-notification {
+            opacity: 0;
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #999999;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            transition: opacity 0.5s ease;
+            z-index: 2;
+            text-align: center;
+
+        }
+                
+
     </style>
 </head>
 <body>
     <h1>Plant Tracker</h1>
-    <div id="plant-list"></div>
+    <div id="global-notification" class="notification"></div>
+
     
     <form id="plant-form">
         <input type="text" id="plant-name" placeholder="Plant Name" required />
         <input type="date" id="last-watered" placeholder="Last Watered Date" required />
         <button type="submit">Add Plant</button>
     </form>
+
+    <div id="plant-list"></div>
 
     <script>
         const lastWateredInput = document.getElementById("last-watered");
