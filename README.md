@@ -2,6 +2,12 @@
 
 1. Run your server with
 
-    ```
-    node backend/server.js
-    ```
+   ```
+   node backend/server.js
+   ```
+
+2. Format with
+
+   ```
+   npm run format
+   ```
