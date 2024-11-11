@@ -6,6 +6,33 @@
     <title>Plant Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
+
+        .plant-row {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+            margin: 20px 0;
+            border-top: 2px solid #ccc;
+        }
+
+        .plant-row::before {
+            content: attr(data-title);
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+
+        .plant-card {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 10px;
+            transition: background-color 0.5s ease, transform 0.5s ease;
+        }
+
+
         #plant-list {
             display: flex;
             flex-wrap: wrap;
@@ -46,7 +73,7 @@
         }
 
         .last-watered-date {
-            border: 1px solid #b6cfb6;
+            border: 2px solid #b6cfb6;
             border-radius: 15px;
             padding-top: 5px;
             margin-top: 5px;
@@ -57,7 +84,29 @@
             color: #333; 
         }
 
-        .watering-history-title {
+        .watering-interval-text {
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 13px;
+            color: #777777;
+            font-weight: bold;
+            margin: 0; 
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        .watering-interval {
+            border: 2px solid #b6cfb6;
+            border-radius: 15px;
+            padding-top: 5px;
+            margin-top: 5px;
+            padding: 5px;
+            background-color:  #f9f9f9;
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 14px; 
+            color: #333; 
+        }
+
+        .watering-history-text {
             font-family: 'Montserrat', sans-serif; 
             font-size: 13px;
             color: #777777;
@@ -209,10 +258,14 @@
     <form id="plant-form">
         <input type="text" id="plant-name" placeholder="Plant Name" required />
         <input type="date" id="last-watered" placeholder="Last Watered Date" required />
+        <input type="number" id="watering-interval" placeholder="Watering Interval (days)" required min="1" />
         <button type="submit">Add Plant</button>
     </form>
 
-    <div id="plant-list"></div>
+   <!--  <div id="plant-list"></div> -->
+    <div id="immediate-watering" class="plant-row" data-title="Needs Immediate Watering"></div>
+    <div id="soon-watering" class="plant-row" data-title="Needs Watering Soon (1-2 days)"></div>
+    <div id="not-urgent-watering" class="plant-row" data-title="Doesn't Need Watering Yet"></div>
 
     <script>
         const lastWateredInput = document.getElementById("last-watered");

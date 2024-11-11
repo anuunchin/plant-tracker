@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const plantList = document.getElementById("plant-list");
     const plantForm = document.getElementById("plant-form");
 
     fetchPlants();
@@ -9,13 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const plantName = document.getElementById("plant-name").value;
         const lastWatered = document.getElementById("last-watered").value;
+        const wateringInterval = parseInt(document.getElementById("watering-interval").value, 10);
+
+
         console.log('Adding new plant...');
 
         try {
             const response = await fetch('http://localhost:3000/plants', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: plantName, lastWatered: lastWatered })
+                body: JSON.stringify({ name: plantName, lastWatered: lastWatered, wateringInterval })
             });
             const newPlant = await response.json();
             addPlantToDOM(newPlant);
@@ -41,30 +43,50 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error('Error adding plant:', error);
         }
+
+        await fetchPlants(); 
+
     });
 
     async function fetchPlants() {
         try {
             const response = await fetch('http://localhost:3000/plants');
             const plants = await response.json();
-            plantList.innerHTML = '';
-            plants.forEach(addPlantToDOM); 
+
+            const today = new Date();
+
+            document.getElementById('immediate-watering').innerHTML = '';
+            document.getElementById('soon-watering').innerHTML = '';
+            document.getElementById('not-urgent-watering').innerHTML = '';    
+
+            plants.forEach(plant => {
+                const nextWateringDate = new Date(plant.lastWatered);
+                nextWateringDate.setDate(nextWateringDate.getDate() + plant.wateringInterval);
+                const daysUntilNextWatering = (nextWateringDate - today) / (1000 * 60 * 60 * 24);
+    
+                if (daysUntilNextWatering <= 0) {
+                    addPlantToDOM(plant, 'immediate-watering', '#FDDFDF');
+                } else if (daysUntilNextWatering <= 2) {
+                    addPlantToDOM(plant, 'soon-watering', '#FCF7DE');
+                } else {
+                    addPlantToDOM(plant, 'not-urgent-watering', '#DEFDE0');
+                }
+            });
         } catch (error) {
             console.error('Error fetching plants:', error);
         }
     }
 
-    function addPlantToDOM(plant) { //DOM = Document Object Model
+    function addPlantToDOM(plant, containerId, backgroundColor) { //DOM = Document Object Model
         const plantItem = document.createElement('div');
         plantItem.classList.add('plant-card');
         plantItem.setAttribute('data-id', plant.id); 
+        plantItem.style.backgroundColor = backgroundColor;
 
-//        const mostRecentWatered = plant.wateringHistory[plant.wateringHistory.length - 1];
-
-        const backgroundColors = ['#FDDFDF', '#FCF7DE', '#DEFDE0', '#DEF3FD', '#F0DEFD', '#eceae4'];
-        const colorIndex = hashStringToIndex(plant.id, backgroundColors.length);
-        const assignedColor = backgroundColors[colorIndex];
-        plantItem.style.backgroundColor = assignedColor;
+//        const backgroundColors = ['#FDDFDF', '#FCF7DE', '#DEFDE0', '#DEF3FD', '#F0DEFD', '#eceae4'];
+//        const colorIndex = hashStringToIndex(plant.id, backgroundColors.length);
+//        const assignedColor = backgroundColors[colorIndex];
+//        plantItem.style.backgroundColor = assignedColor;
     
         plantItem.innerHTML = `
 
@@ -73,7 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
             <p class="last-watered-text">Last watered on:</p>
             <p class="last-watered-date">${plant.lastWatered}</p>
 
-            <h4 class="watering-history-title">Watering History:</h4>
+            <p class="watering-interval-text">Watering interval:</p>
+            <p class="watering-interval">${plant.wateringInterval} days</p>
+
+            <h4 class="watering-history-text">Watering History:</h4>
             <div class="watering-history">
                 ${plant.wateringHistory.map(date => `<p>${date}</p>`).join('')} 
             </div>
@@ -143,7 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         })
 
-        plantList.appendChild(plantItem); 
+        document.getElementById(containerId).appendChild(plantItem);
+
+//        plantList.appendChild(plantItem); 
     }
 
     function hashStringToIndex(string, max) {
@@ -164,6 +191,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 console.error('Failed to delete plant');
             }
+
+            await fetchPlants();
+            
         } catch (error) {
             console.error('Error deleting plant:', error);
         }
@@ -188,6 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (!response.ok) {
                 console.error('Failed to update plant');
             }
+
+            await fetchPlants();
 
         } catch (error) {
             console.error('Could not update last watered day of plant:', error)
