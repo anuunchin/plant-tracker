@@ -29,7 +29,7 @@
       "2024-11-01"
     ],
     "wateringInterval": 6,
-    "isArchived": true
+    "isArchived": false
   },
   {
     "name": "Aloe",
@@ -80,9 +80,11 @@
   },
   {
     "name": "Bird of Paradise",
-    "lastWatered": "2024-11-06",
+    "lastWatered": "2024-11-09",
     "id": "692ac491-6ba9-4646-8d3b-e7917a7fbf83",
     "wateringHistory": [
+      "2024-11-09",
+      "2024-11-08",
       "2024-11-06"
     ],
     "wateringInterval": 4,
@@ -132,16 +134,6 @@
     "name": "Fictional Plant 4",
     "lastWatered": "2024-11-01",
     "id": "98be15e7-da51-43ba-8c62-4e6653a8961e",
-    "wateringHistory": [
-      "2024-11-01"
-    ],
-    "wateringInterval": 5,
-    "isArchived": false
-  },
-  {
-    "name": "Fictional Plant",
-    "lastWatered": "2024-11-01",
-    "id": "0094388b-d2bb-4379-b2e3-c6494598fc47",
     "wateringHistory": [
       "2024-11-01"
     ],
