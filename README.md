@@ -22,7 +22,7 @@ A simple web-based application to help you keep track of your plants and their w
 
 1. **Clone the repo**:
    ```bash
-   git clone https://github.com/anuun/plant-tracker.git
+   git clone https://github.com/anuunchin/plant-tracker.git
    cd plant-tracker
    ```
 
@@ -36,7 +36,8 @@ A simple web-based application to help you keep track of your plants and their w
 
 1. **Start the server**:
    ```bash
-   node server.js
+   cd ..
+   node backend/server.js
    ```
 
    This will start the server on [http://localhost:3000](http://localhost:3000).
