@@ -72,3 +72,4 @@ plant-tracker/
 
 ## 🎥 Video Demo
 ![Screenshot](./sample-use.gif)
+<img src="./sample-use.gif" width="100%" />
